@@ -166,20 +166,20 @@ app.get("/", (req, res) => {
   res.send("Welcome to the server side :)");
 });
 
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
 
-mongoose.set("strictQuery", false);
+// mongoose.set("strictQuery", false);
 
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    })
-  )
-  .catch((err) => console.log(err));
+// mongoose
+//   .connect(process.env.MONGO_URI, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(
+//     app.listen(PORT, () => {
+//       console.log(`Server running on port ${PORT}`);
+//     })
+//   )
+//   .catch((err) => console.log(err));
 
 module.exports = app;
