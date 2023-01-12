@@ -198,7 +198,7 @@ passport.use(
           }
           const user = new User();
           user.username = profile.username;
-          user.email = `${profile.username}@twitter.com`;
+          user.email = profile.email || profile._json.email;
           user.twitter = profile.id;
           user.role = "normal";
           user.tokens.push({ kind: "twitter", accessToken, tokenSecret });

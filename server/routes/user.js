@@ -3,14 +3,19 @@ const passport = require("passport");
 const upload = require("./../utils/multer");
 const passportConfig = require("../config/passport");
 const {
-  updateProfile,
   getUser,
+  myProfile,
+  updateProfile,
   follow,
   unfollow,
   deleteAccount,
 } = require("../controller/user");
 
 const userRoute = Router();
+
+userRoute.get("/:username", passportConfig.isAuthenticated, getUser);
+
+userRoute.get("/user/profile", passportConfig.isAuthenticated, myProfile);
 
 userRoute.patch(
   "/update-profile/:username",
@@ -19,14 +24,13 @@ userRoute.patch(
   updateProfile
 );
 
-userRoute.get("/:username", passportConfig.isAuthenticated, getUser);
 userRoute.put("/:username/follow", passportConfig.isAuthenticated, follow);
 userRoute.put("/:username/unfollow", passportConfig.isAuthenticated, unfollow);
 
-// userRoute.post(
-//   "/:username/delete",
-//   passportConfig.isAuthenticated,
-//   deleteAccount
-// );
+userRoute.delete(
+  "/account/delete",
+  passportConfig.isAuthenticated,
+  deleteAccount
+);
 
 module.exports = userRoute;

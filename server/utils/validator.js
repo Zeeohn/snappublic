@@ -7,8 +7,8 @@ const validateEmail = (email) => {
   return validator.isEmail(email);
 };
 
-const validateFullName = (fullName) => {
-  return /^[a-zA-Z][a-zA-Z\s]{6,50}$/.test(fullName);
+const validateFullName = (name) => {
+  return /^[a-zA-Z][a-zA-Z\s]{6,50}$/.test(name);
 };
 
 const validateRegPassword = (password) => {
@@ -24,10 +24,10 @@ const validateRegPassword = (password) => {
 exports.validateAccountForm = (formData, cPass = false) => {
   const errors = [];
 
-  const { fullName, email, password, cPassword } = formData;
+  const { name, email, password, cPassword } = formData;
 
-  if (!validateFullName(fullName))
-    errors.push({ name: "fullName", msg: MESSAGES.FORM.FULL_NAME });
+  if (!validateFullName(name))
+    errors.push({ name: "name", msg: MESSAGES.FORM.FULL_NAME });
 
   if (!validateEmail(email))
     errors.push({ name: "email", msg: MESSAGES.FORM.EMAIL });

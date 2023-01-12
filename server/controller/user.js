@@ -17,10 +17,24 @@ exports.getUser = async (req, res, next) => {
   }
 };
 
+exports.myProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error });
+  }
+};
+
 exports.updateProfile = async (req, res) => {
   try {
     // Find the user by their username
-    let currentUser = await User.findOne({ username: req.params.username });
+    let currentUser = await User.findById(req.user._id);
     // Make sure that the user exists
     if (!currentUser) {
       return res.status(404).send({ msg: "The specified user was not found" });
@@ -149,13 +163,25 @@ exports.unfollow = async (req, res) => {
   }
 };
 
-exports.deleteAccount = (req, res, next) => {
-  User.deleteOne({ username: req.params.username, _id: req.user.id }, (err) => {
-    if (err) {
-      return next(err);
-    }
+exports.deleteAccount = async (req, res) => {
+  try {
+    // Find the user by the id stored in the request object
+    const user = await User.findById(req.user.id);
+
+    // If the user was not found, return a 404 error
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Delete the user
+    await user.deleteOne();
+
+    // Log out the user and clear their session
     req.logout();
     res.clearCookie("connect.sid");
-    res.status(200).send({ msg: "Account deleted successfully!" });
-  });
+
+    // Return a success message
+    res.status(200).json({ message: "Account deleted successfully!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error });
+  }
 };

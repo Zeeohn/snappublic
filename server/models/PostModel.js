@@ -39,18 +39,27 @@ const PostSchema = new Schema(
       type: Array,
       default: [],
     },
+    shares: {
+      type: Number,
+      default: 0,
+    },
+    views: {
+      type: Number,
+      default: 0,
+    },
     comment: {
       type: [Object],
     },
-    // [
-    //   {
-    //     type: Types.ObjectId,
-    //     ref: "Comment",
-    //   },
-    // ],
   },
   { timestamps: true }
 );
+
+PostSchema.post("save", async function () {
+  await this.constructor.collection.createIndex({
+    caption: "text",
+    catalog: "text",
+  });
+});
 
 const PostModel = model("Post", PostSchema);
 module.exports = PostModel;

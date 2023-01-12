@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const passport = require("passport");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const rateLimit = require("express-rate-limit");
 
 dotenv.config();
 // Import the User model
@@ -37,9 +38,17 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+const resetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: "Too many password reset requests, please try again later",
+});
+
 app.post("/api/v1/login", authController.postLogin);
 app.post("/api/v1/signup", authController.postSignup);
 app.get("/api/v1/logout", authController.logout);
+app.post("/api/v1/reset-password", resetLimiter, authController.resetPassword);
+app.post("api/v1/reset-password/:token", authController.resetToken);
 
 app.get(
   "/api/v1/auth/facebook",
