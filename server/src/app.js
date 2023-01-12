@@ -162,13 +162,12 @@ app.get("/api/v1/auth/instagram/callback", (req, res, next) => {
 app.use("/api/v1", userRoute);
 app.use("/api/v1", postRoute);
 
-app.get("/", passportConfig.isAuthenticated, (req, res) => {
+app.get("/", (req, res) => {
   res.send("Welcome to the server side :)");
 });
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to the MongoDB database
 mongoose.set("strictQuery", false);
 
 mongoose
@@ -183,4 +182,4 @@ mongoose
   )
   .catch((err) => console.log(err));
 
-// module.exports = router;
+module.exports = app;
