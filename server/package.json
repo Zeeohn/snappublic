@@ -1,8 +1,8 @@
 {
-  "name": "test",
+  "name": "snapme",
   "version": "1.0.0",
-  "description": "test authentication app",
-  "main": "appp.js",
+  "description": "snapme social media application",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon app.js",
