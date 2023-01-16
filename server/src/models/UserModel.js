@@ -17,7 +17,6 @@ const UserSchema = new Schema(
     occupation: {
       type: String,
       maxlength: 50,
-      minlength: 5,
     },
     country: {
       type: String,
