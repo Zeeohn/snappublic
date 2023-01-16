@@ -103,6 +103,8 @@ exports.postSignup = (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     username: req.body.username,
+    occupation: req.body.occupation,
+    country: req.body.country,
     picture:
       "https://www.shutterstock.com/image-vector/flat-vector-icon-profile-face-user-1913139877",
     role: "normal",
