@@ -17,10 +17,13 @@ const UserSchema = new Schema(
     occupation: {
       type: String,
       maxlength: 50,
+      minlength: 5,
     },
     country: {
       type: String,
       maxlength: 50,
+      minlength: 3,
+      unique: [true, "real country on earth"],
     },
     email: {
       type: String,
