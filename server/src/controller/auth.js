@@ -87,6 +87,10 @@ exports.postSignup = (req, res, next) => {
     validationErrors.push({
       msg: "Password must be at least 8 characters long",
     });
+  if (!validator.isLength(req.body.country, { min: 3, max: 50 }))
+    validationErrors.push({
+      msg: "country must be real nation on earth or 3 characters minimum",
+    });
   //
 
   if (validationErrors.length > 0) {
