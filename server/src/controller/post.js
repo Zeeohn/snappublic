@@ -45,7 +45,7 @@ exports.checkUserRole = (req, res, next) => {
             catalog === "party" ||
             catalog === "music" ||
             catalog === "dance" ||
-            catalog === "afrobeats ||
+            catalog === "afrobeats" ||
             catalog === "sports"))
       ) {
         next();
