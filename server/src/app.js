@@ -3,10 +3,13 @@ const dotenv = require("dotenv");
 const router = express.Router();
 const MongoStore = require("connect-mongo");
 const morgan = require("morgan");
+const cors = require("cors");
 const passport = require("passport");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const rateLimit = require("express-rate-limit");
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
 dotenv.config();
 // Import the User model
@@ -23,6 +26,7 @@ app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
+app.use(cors());
 
 app.use(
   session({
@@ -162,7 +166,7 @@ app.get("/api/v1/auth/instagram/callback", (req, res, next) => {
 app.use("/api/v1", userRoute);
 app.use("/api/v1", postRoute);
 
-app.get("/", (req, res) => {
+app.get("/", passportConfig.isAuthenticated, (req, res) => {
   res.send("Welcome to the server side :)");
 });
 

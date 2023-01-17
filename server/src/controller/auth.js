@@ -24,7 +24,7 @@ exports.postLogin = (req, res, next) => {
 
   if (validationErrors.length) {
     return res
-      .status(401)
+      .status(400)
       .send({ msg: "There are some errors in your form input" });
   }
   req.body.email = validator.normalizeEmail(req.body.email, {
@@ -85,7 +85,7 @@ exports.postSignup = (req, res, next) => {
     });
   if (!validator.isLength(req.body.username, { min: 4, max: 30 }))
     validationErrors.push({
-      msg: "Password must be at least 8 characters long",
+      msg: "Username must be at least 4 characters long or maximum of 30 characters",
     });
   //
 
@@ -100,35 +100,42 @@ exports.postSignup = (req, res, next) => {
 
   const user = new User({
     name: req.body.name,
+    username: req.body.username,
     email: req.body.email,
     password: req.body.password,
-    username: req.body.username,
+    gender: req.body.gender,
+    country: req.body.country,
+    birthday: req.body.birthday,
+    occupation: req.body.occupation,
     picture:
       "https://www.shutterstock.com/image-vector/flat-vector-icon-profile-face-user-1913139877",
     role: "normal",
   });
 
-  User.findOne({ email: req.body.email }, (err, existingUser) => {
-    if (err) {
-      return next(err);
-    }
-    if (existingUser) {
-      return res
-        .status(401)
-        .send({ msg: "Account with that email address already exists." });
-    }
-    user.save((err) => {
+  User.findOne(
+    { email: req.body.email, username: req.body.username },
+    (err, existingUser) => {
       if (err) {
         return next(err);
       }
-      req.logIn(user, (err) => {
+      if (existingUser) {
+        return res.status(401).send({
+          msg: "Account with that email address or username already exists.",
+        });
+      }
+      user.save((err) => {
         if (err) {
           return next(err);
         }
-        res.send(user);
+        req.logIn(user, (err) => {
+          if (err) {
+            return next(err);
+          }
+          res.send(user);
+        });
       });
-    });
-  });
+    }
+  );
 };
 
 // API endpoint to handle password reset request
@@ -157,12 +164,18 @@ exports.resetPassword = async (req, res) => {
     // Send an email to the user with a link to reset their password
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const emailOptions = {
-      from: "noreply@snapme.com",
+      from: "snapme.catalog@gmail.com",
       to: user.email,
       subject: "Snapme Password Reset",
-      text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n Please click on the following link, or paste this into your browser to complete the process:\n\n http://localhost:5000/reset-password/${token}\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n,`,
+      text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n Please click on the following link, or paste this into your browser to complete the process:\n\n http://localhost:5000/api/v1/reset-password/${token}\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n,`,
+      mail_settings: {
+        sandbox_mode: {
+          enable: true,
+        },
+      },
     };
-    sgMail.send(emailOptions);
+    const a = await sgMail.send(emailOptions);
+    console.log(a);
     // Send a success message to the client
     res.send({ message: "Password reset email sent!" });
   } catch (err) {

@@ -33,7 +33,7 @@ exports.myProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    // Find the user by their username
+    // Find the user by their id
     let currentUser = await User.findById(req.user._id);
     // Make sure that the user exists
     if (!currentUser) {
@@ -61,6 +61,10 @@ exports.updateProfile = async (req, res) => {
       email: req.body.email || currentUser.email,
       name: req.body.name || currentUser.name,
       username: req.body.username || currentUser.username,
+      birthday: req.body.birthday || currentUser.birthday,
+      gender: req.body.gender || currentUser.gender,
+      country: req.body.location || currentUser.location,
+      occupation: req.body.occupation || currentUser.occupation,
       picture: result ? result.secure_url : currentUser.picture,
       cloudinary_id: result ? result.public_id : currentUser.cloudinary_id,
     };

@@ -19,6 +19,7 @@ const UserSchema = new Schema(
       unique: [true, "email already registered"],
       maxlength: 50,
       index: true,
+      required: true,
     },
     tokens: Array,
     passwordResetToken: String,
@@ -50,9 +51,24 @@ const UserSchema = new Schema(
     password: {
       type: String,
     },
+    gender: {
+      type: String,
+    },
+    birthday: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    occupation: {
+      type: String,
+    },
     posts: {
       type: Array,
       default: [],
+    },
+    catalog_preferences: {
+      type: Array,
     },
     saved: {
       type: Array,

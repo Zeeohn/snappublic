@@ -13,6 +13,8 @@ const {
   like,
   savePost,
   addComment,
+  followCatalog,
+  suggestedCatalogs,
   deletePost,
   deleteComment,
   search,
@@ -29,6 +31,12 @@ postsRoute.post(
 );
 postsRoute.put("/:id/like", passportConfig.isAuthenticated, like);
 postsRoute.get("/pins/:catalog", postsCatalog);
+postsRoute.put(
+  "/catalog/:catalogName/follow",
+  passportConfig.isAuthenticated,
+  followCatalog
+);
+postsRoute.get("/catalog/suggested", suggestedCatalogs);
 postsRoute.get("/pin-details/:id", postDetail);
 postsRoute.get("/pins/download/:id", passportConfig.isAuthenticated, download);
 postsRoute.get("/", allPosts);

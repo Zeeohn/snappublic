@@ -73,13 +73,10 @@ exports.createPost = async (req, res) => {
       if (validator.isEmpty(caption)) {
         errors.push({ param: "caption", msg: "Caption field is required" });
       }
-      if (
-        validator.isEmpty(message) &&
-        validator.isLength(message, { max: 300 })
-      ) {
+      if (validator.isLength(message, { max: 300 })) {
         errors.push({
           param: "message",
-          msg: "Message/post field is required or you have exceeded the text limit of 300 characters",
+          msg: "You have exceeded the text limit of 300 characters",
         });
       }
       if (validator.isEmpty(req.params.catalog)) {
@@ -247,51 +244,6 @@ exports.allPosts = async (req, res) => {
   }
 };
 
-// exports.getPosts = async (req, res) => {
-//   console.log("Entering here...");
-//   try {
-//     // Find all posts created by the currently signed in user
-//     const posts = await Post.find({ user: req.user._id });
-//     // If no posts are found, return a 404 error
-//     if (!posts) {
-//       return res.status(404).json({ error: "No posts found for this user" });
-//     }
-//     // Find the user associated with each post
-//     const postUsers = await User.find({
-//       _id: { $in: posts.map((post) => post.user) },
-//     });
-//     // Create a map of users, so we can easily look up the user associated with each post
-//     const userMap = postUsers.reduce((map, user) => {
-//       map[user._id] = user;
-//       return map;
-//     }, {});
-//     // Add the user information to each post and send the response
-//     const response = posts.map((post) => ({
-//       ...post._doc,
-//       user: userMap[post.user],
-//     }));
-//     res.json(response);
-//   } catch (err) {
-//     res.status(500).json(err);
-//     console.log(err);
-//   }
-// };
-
-// exports.getAllPins = async (req, res) => {
-//   console.log("Outside here..");
-//   try {
-//     console.log("Getting here");
-//     const posts = await Post.find()
-//       .populate("user", "username name picture")
-//       .exec();
-//     console.log(posts);
-//     res.json({ posts });
-//   } catch (error) {
-//     console.log(error, " Getting error");
-//     res.status(500).json({ error });
-//   }
-// };
-
 exports.download = async (req, res) => {
   try {
     const { id } = req.params;
@@ -370,6 +322,58 @@ exports.sharePost = async (req, res) => {
     res.json({ message: "Post shared successfully", shares: post.shares });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+exports.followCatalog = async (req, res) => {
+  try {
+    User.findOne({ _id: req.user._id }, (err, user) => {
+      if (err) return res.status(404).send({ msg: "User not found" });
+      user.catalog_preferences.push(req.params.catalogName);
+      user.save((error, user) => {
+        if (error)
+          return res.status(500).send({
+            msg: "An error occurred while following catalog",
+            error: err,
+          });
+        return res.status(200).send({
+          msg: "Successfully followed catalog",
+          catalog: req.params.catalogName,
+        });
+      });
+    });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .send({ msg: "An error occurred while following catalog", error: err });
+  }
+};
+
+exports.suggestedCatalogs = async (req, res) => {
+  try {
+    // Find the user
+    const user = await User.findOne({ _id: req.user._id });
+    if (!user) return res.status(404).send({ msg: "User not found" });
+
+    // Get the catalogs the user is following
+    const followedCatalogs = user.catalog_preferences;
+
+    // Find posts from the followed catalogs
+    const suggestedPosts = await Post.find({
+      catalog: { $in: followedCatalogs },
+    })
+      .limit(req.query.limit)
+      .skip(req.query.skip);
+
+    // Send the suggested posts as a response
+    return res.status(200).send({ suggestedPosts });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      msg: "An error occurred while getting suggested posts",
+      error: err,
+    });
   }
 };
 
@@ -517,29 +521,6 @@ exports.search = async (req, res) => {
     res.status(500).json({ error });
   }
 };
-
-// exports.search = async (req, res) => {
-//   try {
-//     const queryString = req.query.query;
-//     if (!queryString)
-//       return res.status(400).json({ error: "Query param is missing" });
-//     if (typeof queryString !== "string")
-//       return res.status(400).json({ error: "Query param should be a string" });
-//     // search for posts with a matching caption or catalog field
-//     const searchPost = await Post.find({
-//       $or: [
-//         { caption: { $regex: queryString, $options: "i" } },
-//         { catalog: { $regex: queryString, $options: "i" } },
-//       ],
-//     });
-
-//     // return the search results to the client
-//     res.status(200).send(searchPost);
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send(error);
-//   }
-// };
 
 exports.deletePost = async (req, res) => {
   try {
@@ -733,5 +714,73 @@ exports.deletePost = async (req, res) => {
 //   } catch (err) {
 //     console.log(err);
 //     res.status(500).json(err);
+//   }
+// };
+
+// exports.getPosts = async (req, res) => {
+//   console.log("Entering here...");
+//   try {
+//     // Find all posts created by the currently signed in user
+//     const posts = await Post.find({ user: req.user._id });
+//     // If no posts are found, return a 404 error
+//     if (!posts) {
+//       return res.status(404).json({ error: "No posts found for this user" });
+//     }
+//     // Find the user associated with each post
+//     const postUsers = await User.find({
+//       _id: { $in: posts.map((post) => post.user) },
+//     });
+//     // Create a map of users, so we can easily look up the user associated with each post
+//     const userMap = postUsers.reduce((map, user) => {
+//       map[user._id] = user;
+//       return map;
+//     }, {});
+//     // Add the user information to each post and send the response
+//     const response = posts.map((post) => ({
+//       ...post._doc,
+//       user: userMap[post.user],
+//     }));
+//     res.json(response);
+//   } catch (err) {
+//     res.status(500).json(err);
+//     console.log(err);
+//   }
+// };
+
+// exports.getAllPins = async (req, res) => {
+//   console.log("Outside here..");
+//   try {
+//     console.log("Getting here");
+//     const posts = await Post.find()
+//       .populate("user", "username name picture")
+//       .exec();
+//     console.log(posts);
+//     res.json({ posts });
+//   } catch (error) {
+//     console.log(error, " Getting error");
+//     res.status(500).json({ error });
+//   }
+// };
+
+// exports.search = async (req, res) => {
+//   try {
+//     const queryString = req.query.query;
+//     if (!queryString)
+//       return res.status(400).json({ error: "Query param is missing" });
+//     if (typeof queryString !== "string")
+//       return res.status(400).json({ error: "Query param should be a string" });
+//     // search for posts with a matching caption or catalog field
+//     const searchPost = await Post.find({
+//       $or: [
+//         { caption: { $regex: queryString, $options: "i" } },
+//         { catalog: { $regex: queryString, $options: "i" } },
+//       ],
+//     });
+
+//     // return the search results to the client
+//     res.status(200).send(searchPost);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send(error);
 //   }
 // };
