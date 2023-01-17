@@ -23,7 +23,10 @@ exports.checkUserRole = (req, res, next) => {
           catalog === "shows & concerts" ||
           catalog === "photography" ||
           catalog === "house decoration" ||
-          catalog === "tourism")
+          catalog === "news" ||
+          catalog === "travel" ||
+          catalog === "others" ||
+          catalog === "tourism") 
       ) {
         //user has the role and can create post on these catalog
         next();
@@ -36,7 +39,14 @@ exports.checkUserRole = (req, res, next) => {
             catalog === "websites" ||
             catalog === "dogs" ||
             catalog === "cats" ||
-            catalog === "travel"))
+            catalog === "pets" ||
+            catalog === "comedy" ||
+            catalog === "nature" ||
+            catalog === "party" ||
+            catalog === "music" ||
+            catalog === "dance" ||
+            catalog === "afrobeats ||
+            catalog === "sports"))
       ) {
         next();
       } else {
