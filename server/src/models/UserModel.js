@@ -14,6 +14,16 @@ const UserSchema = new Schema(
       type: String,
       maxlength: 50,
     },
+    occupation: {
+      type: String,
+      maxlength: 50,
+    },
+    country: {
+      type: String,
+      maxlength: 50,
+      minlength: 3,
+      unique: [true, "real country on earth"],
+    },
     email: {
       type: String,
       unique: [true, "email already registered"],
