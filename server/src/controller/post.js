@@ -55,10 +55,25 @@ exports.checkUserRole = (req, res, next) => {
 
 exports.createPost = async (req, res) => {
   try {
-    //Uploading image to cloudinary
+    // Check if the uploaded file is an image or video
+    let resourceType;
+    if (req.file.mimetype.startsWith("image")) {
+      resourceType = "image";
+    } else if (req.file.mimetype.startsWith("video")) {
+      resourceType = "video";
+    } else {
+      res.status(400).json({ error: "Invalid file type" });
+      return;
+    }
+
+    // Upload the file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: resourceType,
       folder: "Posts-Media",
     });
+    // const result = await cloudinary.uploader.upload(req.file.path, {
+    //   folder: "Posts-Media",
+    // });
     // Find user by the given username
     let currentUser = await User.findById(req.user.id);
 
@@ -73,7 +88,7 @@ exports.createPost = async (req, res) => {
       if (validator.isEmpty(caption)) {
         errors.push({ param: "caption", msg: "Caption field is required" });
       }
-      if (validator.isLength(message, { max: 300 })) {
+      if (!validator.isLength(message, { max: 300 })) {
         errors.push({
           param: "message",
           msg: "You have exceeded the text limit of 300 characters",
