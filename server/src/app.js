@@ -8,8 +8,6 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const rateLimit = require("express-rate-limit");
-const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
 
 dotenv.config();
 // Import the User model
