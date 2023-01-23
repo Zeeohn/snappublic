@@ -17,6 +17,7 @@ const {
   suggestedCatalogs,
   deletePost,
   deleteComment,
+  sharePost,
   search,
 } = require("../controller/post");
 

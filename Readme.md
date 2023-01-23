@@ -33,7 +33,7 @@ Whew! It wasn't an easy job 😢.
 | /api/v1/catalog/suggested           | GET    | Gets a list of suggested posts for the user               |
 | /api/v1/pin-details/:id             | GET    | Gets a single post detail user                            |
 
-## /login
+## 1. /login
 
 The `/login` endpoint accepts the following example JSON data:
 
@@ -82,3 +82,60 @@ It sends back the user object if the request is successful, and it logs the user
 
 This endpoint sends the following also;
 `400 Bad Request`: This means that there are some errors in the login form data submitted
+
+## 2. /signup
+
+The `/login` endpoint accepts the following example JSON data:
+
+### Input
+
+```json
+{
+  "name": "john doe",
+  "username": "john_doe123",
+  "email": "johndoe@example.com",
+  "password": "eight-characters",
+  "gender": "male",
+  "country": "Switzerland",
+  "birthday": "1st January 1990",
+  "occupation": "Developer"
+}
+```
+
+Then it sends this sample Output
+
+### Output
+
+It sends back the user object if the request is successful, and it logs the user into the session e.g;
+
+```json
+{
+  "username": "DoeJohn12",
+  "name": "John Doe",
+  "email": "johndoe@example.com",
+  "tokens": [],
+  "picture": "https://www.shutterstock.com/image-vector/flat-vector-icon-profile-face-user-1913139877",
+  "cloudinary_id": "",
+  "lastVisited": "2023-01-16T17:25:50.638Z",
+  "role": "normal",
+  "password": "$2a$10$ao5hAKuPlGIwoRJv5aKh5usNWHXGYvE/MKWaECEtJVwsgS9yjODy2",
+  "gender": "male",
+  "birthday": "1st January 1990",
+  "country": "Switzerland",
+  "posts": [],
+  "catalog_preferences": [],
+  "saved": [],
+  "followers": [],
+  "following": [],
+  "_id": "63c589b392a449097e05a91f",
+  "createdAt": "2023-01-16T17:30:39.236Z",
+  "updatedAt": "2023-01-16T17:30:39.236Z",
+  "__v": 0
+}
+```
+
+### Status Codes / Responses
+
+This endpoint sends the following also;
+`401 Bad Request`: This means that there are some errors in the login form data submitted (There are some errors in your form input)
+It will also throw this error if an account already exists with the email and/or username
